@@ -1,4 +1,4 @@
-function [S, f, t] = stftFunctionToPython( file_name )
+function [S] = stftFunctionToPython( file_name )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
