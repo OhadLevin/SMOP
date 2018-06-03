@@ -84,11 +84,9 @@ def pitch_to_note(pitch):
                 side = PLUS;
 
 
-    result = notes[A4_INDEX + r_index];
     if (side == PLUS):
-        result = str(result) + " plus ";
+        result = (notes[A4_INDEX + r_index], cent_index);
     else:
-        result = str(result) + " minus ";
-    result = str(result) + str(cent_index) + " cents";
-    return result;
+        result = (notes[A4_INDEX + r_index], -cent_index);
+    return result
 
