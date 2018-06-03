@@ -6,13 +6,21 @@ from matplotlib.ticker import FormatStrFormatter, LinearLocator
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.io import loadmat
 
+from pitch_to_note import pitch_to_note
+from stft_to_pitch_intervals import stft_to_pitch_interval
+
 SMOP_PATH = "C:\\Users\\t8413244\\Desktop\\SMOP\\"
-TIME_PERIOD = 0.05 # time period to get an average pitch of
+
+print(pitch_to_note(440))
+print(pitch_to_note(442))
+print(pitch_to_note(430))
+print(pitch_to_note(230))
+print(pitch_to_note(1230))
 
 ######### get data from file
-s = []
-f = []
-t = []
+# s = []
+# f = []
+# t = []
 # with open(SMOP_PATH+"s.txt", "rb") as fp:
 #     s = pickle.load(fp)
 # with open(SMOP_PATH+"f.txt", "rb") as fp:
@@ -24,40 +32,31 @@ x = loadmat(SMOP_PATH+'c4toc5_1.m4a'
             'stft'
             '.mat')
 s = x['S']
-f= x['f']
+f = x['f']
 t = x['t']
 
 time_pitch_map = {}
 count = 0
 time = t[0]
 current_time_pitches = np.zeros(np.shape(f))
-count_runs = 1
-total_runs = 0
 temp = []
 temp_amp = []
 for temp_t in t[0]:
 
-    current_time_pitches += s[:,total_runs]
-    count_runs +=1
-    total_runs += 1
-    if(True):
-        count+=1
-        current_time_pitches /= count_runs
-        time_pitch_map[count* TIME_PERIOD] = f[np.unravel_index(np.argmax(
-            current_time_pitches,axis=None), current_time_pitches.shape)]
-        temp.append(time_pitch_map[count* TIME_PERIOD])
-
-        temp_amp.append(np.argmax(current_time_pitches,axis=None))
-        current_time_pitches = np.zeros(np.shape(f))
-        count_runs = 0
+    current_time_pitches += s[:, count]
+    count += 1
+    time_pitch_map[temp_t] = f[np.unravel_index(np.argmax(
+        current_time_pitches,axis=None), current_time_pitches.shape)]
+    temp.append((time_pitch_map[temp_t], temp_t))
+    temp_amp.append(np.argmax(current_time_pitches,axis=None))
+    current_time_pitches = np.zeros(np.shape(f))
 
 max_amp = max(temp_amp)
-print(max_amp)
-print(temp_amp)
+
 for i in range(len(temp_amp)):
-    if(temp_amp[i] < 0.2*max_amp):
-        print(temp_amp[i])
-        temp[i] = 0
+    if temp_amp[i] < 0.1 * max_amp:
+        time_pitch_map[temp[i][1]] = 0
+        temp[i] = (0, temp[i][1])
 print(time_pitch_map)
 
 fig = plt.figure()
@@ -68,5 +67,6 @@ fig = plt.figure()
 # my_col = cm.jet(-Z/np.amax(Z))
 # surf = ax.plot_surface(X, Y, Z, facecolors= my_col)
 # plt.show()
-plt.plot(temp)
+stft_to_pitch_interval(time_pitch_map)
+plt.plot(t[0], temp[:])
 plt.show()
