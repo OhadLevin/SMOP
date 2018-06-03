@@ -11,7 +11,6 @@ def stft_to_pitch_interval(max_pitch_to_time_map):
             lst.append(tuple(current_interval))
             current_interval = [pitch, time, time]
 
-    print(lst)
     return lst
 
 

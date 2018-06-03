@@ -3,6 +3,8 @@ import math
 
 def pitch_to_note(pitch):
 
+    if(pitch < 27.7 or pitch > 14080):
+        return ("None", 0)
 
     input = pitch
     A4 = 440.0;

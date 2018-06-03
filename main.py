@@ -11,12 +11,6 @@ from stft_to_pitch_intervals import stft_to_pitch_interval
 
 SMOP_PATH = "C:\\Users\\t8413244\\Desktop\\SMOP\\"
 
-print(pitch_to_note(440))
-print(pitch_to_note(442))
-print(pitch_to_note(430))
-print(pitch_to_note(230))
-print(pitch_to_note(1230))
-
 ######### get data from file
 # s = []
 # f = []
@@ -67,6 +61,9 @@ fig = plt.figure()
 # my_col = cm.jet(-Z/np.amax(Z))
 # surf = ax.plot_surface(X, Y, Z, facecolors= my_col)
 # plt.show()
-stft_to_pitch_interval(time_pitch_map)
+lst_of_intervals = stft_to_pitch_interval(time_pitch_map)
+for inter in lst_of_intervals:
+    print(str(pitch_to_note(inter[0])) + " from: " + str(inter[1]) + " to: " +
+          str(inter[2]))
 plt.plot(t[0], temp[:])
 plt.show()
