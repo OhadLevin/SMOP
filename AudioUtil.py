@@ -84,8 +84,10 @@ def multiply(file_in, mult_factor):
 def multiply_by_time(file_in, time):
     inp = wave.open(file_in)
     duration = inp.getnframes() / inp.getframerate()
+    print(file_in + " duration " + str(duration))
     inp.close()
     factor = time / duration
+    print(" factor " + str(factor))
     return multiply(file_in, factor)
 
 
