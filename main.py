@@ -29,11 +29,12 @@ python3_command = "C:\\Users\\t8413244\\Desktop\\SMOP\\smopSkeleton.py " \
 python3_command = SMOP_PATH + "smopSkeleton.py"
 # launch your python2 script using bash
 
-process = subprocess.Popen(python3_command.split(), stdout=subprocess.PIPE,
-                           shell= True)
+#process = subprocess.Popen(python3_command.split(), stdout=subprocess.PIPE,
+#                           shell= True)
 
-output, error = process.communicate()  # receive output from the python2 script
-print(output, error)
+#output, error = process.communicate()  # receive output from the python2
+# script
+#print(output, error)
 
 
 x = loadmat(file_name+'stft.mat')
@@ -95,7 +96,6 @@ print(midi_intervals)
 list_of_files_to_concat = []
 for inter in midi_intervals:
     NOTE = inter[0]
-    print(NOTE)
     if (NOTE not in note_in_intervals.keys()):
         NOTE = NOTE.replace(NOTE[-1], str(int(NOTE[-1]) + 1))
         if(NOTE not in note_in_intervals.keys()):
@@ -103,8 +103,11 @@ for inter in midi_intervals:
             print(NOTE)
     sliced = AudioUtil.slicer(note_in_intervals[NOTE][-1][1] * 1000,
                               note_in_intervals[NOTE][-1][2] * 1000, file_name)
+    if (inter[2] - inter[1]) <= 0:
+        continue
+    sliced = AudioUtil.multiply_by_time(sliced, (inter[2] - inter[1])/1000)
     list_of_files_to_concat.append(sliced)
-
+print(list_of_files_to_concat)
 concatted = AudioUtil.concat(*list_of_files_to_concat)
 
 plt.plot(t[0], temp[:])

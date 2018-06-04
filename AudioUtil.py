@@ -1,4 +1,6 @@
 import wave
+
+import time
 from scipy.io import wavfile
 import math
 
@@ -32,7 +34,8 @@ def slicer(startmili, endmili, file_inputdir):
 
 
 def concat(*files):
-    file_outdir = FILE_OUT.format("HI".replace(".wav","").replace("\\","_") + "concat")
+    file_outdir = FILE_OUT.format("HI".replace(".wav","").replace("\\", "_") +
+                                  "concat" + str(time.time()))
     data = b''
     sw = 2
     fr = 44100
@@ -73,6 +76,7 @@ def multiply(file_in, mult_factor):
     out.writeframes(data)
     inp.close()
     out.close()
+
     file_out = concat(file_out, file_outdir)
     return file_out
 
@@ -82,7 +86,7 @@ def multiply_by_time(file_in, time):
     duration = inp.getnframes() / inp.getframerate()
     inp.close()
     factor = time / duration
-    multiply(file_in, factor)
+    return multiply(file_in, factor)
 
 
 
