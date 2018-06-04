@@ -30,6 +30,7 @@ def slicer(startmili, endmili, file_inputdir):
     out.close()
     return file_outdir
 
+
 def concat(*files):
     file_outdir = FILE_OUT.format("HI".replace(".wav","").replace("\\","_") + "concat")
     data = b''
@@ -51,8 +52,44 @@ def concat(*files):
     out.close()
     return file_outdir
 
+
+def multiply(file_in, mult_factor):
+    int_factor = math.floor(mult_factor)
+    mod_factor = mult_factor - int_factor
+    int_arr = [file_in] * int_factor
+    file_out = concat(*int_arr)
+
+    file_outdir = FILE_OUT.format(file_in.replace(".wav",
+                                                        "").replace("\\",
+                                                                    "_") + " mult")
+    inp = wave.open(file_in, 'rb')
+    inp.rewind()
+    dif = math.ceil(inp.getnframes() * mod_factor)
+    data = inp.readframes(dif)
+    out = wave.open(file_outdir, 'wb')
+    out.setnchannels(inp.getnchannels())
+    out.setframerate(inp.getframerate())
+    out.setsampwidth(inp.getsampwidth())
+    out.writeframes(data)
+    inp.close()
+    out.close()
+    file_out = concat(file_out, file_outdir)
+    return file_out
+
+
+def multiply_by_time(file_in, time):
+    inp = wave.open(file_in)
+    duration = inp.getnframes() / inp.getframerate()
+    inp.close()
+    factor = time / duration
+    multiply(file_in, factor)
+
+
+
+
 if __name__ == '__main__':
-    #slicer(1000, 2000, FILE)
+    # #slicer(1000, 2000, FILE)
     f = slicer(1000, 2000, FILE)
-    concat(f,f,f)
+    multiply(f, 9.5)
+
 
