@@ -26,9 +26,7 @@ def slicer(startmili, endmili, file_inputdir):
     out.writeframes(data)
     inp.close()
     out.close()
-
-
-
+    return file_outdir
 
 
 
