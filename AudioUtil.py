@@ -34,9 +34,9 @@ def slicer(startmili, endmili, file_inputdir):
 def concat(*files):
     file_outdir = FILE_OUT.format("HI".replace(".wav","").replace("\\","_") + "concat")
     data = b''
-    sw = 0
-    fr = 0
-    c = 0
+    sw = 2
+    fr = 44100
+    c = 1
     for i in range(len(files)):
         tmp = wave.open(files[i], 'rb')
         data += tmp.readframes(tmp.getnframes())
