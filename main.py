@@ -7,27 +7,19 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.io import loadmat
 import subprocess
 
+import AudioUtil
 from pitch_to_note import pitch_to_note
 from stft_to_pitch_intervals import stft_to_pitch_interval
 
 SMOP_PATH = "C:\\Users\\t8413244\\Desktop\\SMOP\\"
-SMOP_PATH = "C:\\Users\\t8554024\\Desktop\\אמיר - " \
-            "תלפיות\\אקדמיה\\אינטרו\\SMOP\\"
+#SMOP_PATH = "C:\\Users\\t8554024\\Desktop\\אמיר - " \
+#            "תלפיות\\אקדמיה\\אינטרו\\SMOP\\"
 
-######### get data from file
-# s = []
-# f = []
-# t = []
-# with open(SMOP_PATH+"s.txt", "rb") as fp:
-#     s = pickle.load(fp)
-# with open(SMOP_PATH+"f.txt", "rb") as fp:
-#     f = pickle.load(fp)
-# with open(SMOP_PATH+"t.txt", "rb") as fp:
-#     t = pickle.load(fp)
 
 #!/usr/bin/env python3
+file_name = 'Berklee44v4\\piano_D4.wav'
 
-file_path = SMOP_PATH+'c4toc5slow.3gp'
+file_path = SMOP_PATH+file_name
 python3_command = "C:\\Users\\t8413244\\Desktop\\SMOP\\smopSkeleton.py " \
                   ""+file_path  #
 python3_command = SMOP_PATH + "\\smopSkeleton.py"
@@ -36,6 +28,7 @@ python3_command = SMOP_PATH + "\\smopSkeleton.py"
 process = subprocess.Popen(python3_command.split(), stdout=subprocess.PIPE,
                            shell= True)
 output, error = process.communicate()  # receive output from the python2 script
+
 
 
 x = loadmat(file_path+'stft.mat')
@@ -79,5 +72,24 @@ lst_of_intervals = stft_to_pitch_interval(time_pitch_map)
 for inter in lst_of_intervals:
     print(str(pitch_to_note(inter[0])) + " from: " + str(inter[1]) + " to: " +
           str(inter[2]))
+
+note_in_intervals = {}
+for inter in lst_of_intervals:
+    note = pitch_to_note(inter[0])
+    if(note[0] not in note_in_intervals.keys()):
+        note_in_intervals[note[0]] = []
+    note_in_intervals[note[0]].append((note[1], inter[1], inter[2]))
+print(note_in_intervals)
+
+for note,inters in note_in_intervals.items():
+    inters.sort(key=lambda inter : inter[2]-inter[1])
+
+print(note_in_intervals)
+NOTE = "D5"
+
+print(note_in_intervals[NOTE][-1][1],note_in_intervals[NOTE][-1][2], file_path)
+
+AudioUtil.slicer(note_in_intervals[NOTE][-1][1] * 1000,note_in_intervals[
+    NOTE][-1][2] * 1000, file_name)
 plt.plot(t[0], temp[:])
 plt.show()
