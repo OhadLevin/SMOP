@@ -21,7 +21,7 @@ SMOP_PATH = "C:\\Users\\t8413244\\Desktop\\SMOP\\"
 MIDI_file_name = "MIDI//yonatanHakatan.mid"
 
 #!/usr/bin/env python3
-file_name = 'c4toc5slow.wav'
+file_name = 'c4toc5_1.wav'
 
 file_path = SMOP_PATH+file_name
 
@@ -38,7 +38,6 @@ python3_command = SMOP_PATH + "smopSkeleton.py"
 # script
 #print(output, error)
 
-
 x = loadmat(file_name+'stft.mat')
 s = x['S']
 f = x['f']
@@ -50,12 +49,15 @@ time = t[0]
 current_time_pitches = np.zeros(np.shape(f))
 temp = []
 temp_amp = []
-for temp_t in t[0]:
 
+def find_max_pitch(current_time_pitches):
+    return f[np.unravel_index(np.argmax(current_time_pitches, axis=None),
+                              current_time_pitches.shape)]
+
+for temp_t in t[0]:
     current_time_pitches += s[:, count]
     count += 1
-    time_pitch_map[temp_t] = f[np.unravel_index(np.argmax(
-        current_time_pitches,axis=None), current_time_pitches.shape)]
+    time_pitch_map[temp_t] = find_max_pitch(current_time_pitches)
     temp.append((time_pitch_map[temp_t], temp_t))
     temp_amp.append(np.argmax(current_time_pitches,axis=None))
     current_time_pitches = np.zeros(np.shape(f))
@@ -110,9 +112,14 @@ for inter in midi_intervals:
 
     sliced = AudioUtil.multiply_by_time(sliced, (inter[2] - inter[1])/1000.0)
     print(inter, sliced)
-    list_of_files_to_concat.append(sliced)
-print(list_of_files_to_concat)
-concatted = AudioUtil.concat(*list_of_files_to_concat)
+    temp_tup = (inter, sliced)
+    list_of_files_to_concat.append(temp_tup)
+list_of_files_to_concat.sort(key= lambda tup:tup[0][1]) # sorting by time
+new_list = []
+for tup in list_of_files_to_concat:
+    new_list.append(tup[1])
+print(new_list)
+concatted = AudioUtil.concat(*new_list)
 pygame.init()
 pygame.mixer.music.load(concatted)
 pygame.mixer.music.play()

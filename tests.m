@@ -1,6 +1,6 @@
 
 
-file_name = 'c4toc5slow.wav';
+file_name = 'c4toc5_1.wav';
 % load a .wav file
 [x, fs] = audioread(file_name);   % load an audio file
 x = x(:, 1);                        % get the first channel
