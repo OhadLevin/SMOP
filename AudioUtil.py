@@ -19,7 +19,6 @@ def slicer(startmili, endmili, file_inputdir):
     inp.rewind()
     inp.setpos(start)
     data = inp.readframes(dif)
-    print(file_outdir)
     out = wave.open(file_outdir, 'wb')
     out.setnchannels(inp.getnchannels())
     out.setframerate(inp.getframerate())
