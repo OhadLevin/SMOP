@@ -89,7 +89,7 @@ def multiply_by_time(file_in, time):
 
 if __name__ == '__main__':
     # #slicer(1000, 2000, FILE)
-    f = slicer(1000, 2000, FILE)
-    multiply(f, 9.5)
+    f = slicer(1000, 1546, FILE)
+    multiply_by_time(f, 9.36)
 
 
