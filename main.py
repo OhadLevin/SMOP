@@ -21,7 +21,7 @@ SMOP_PATH = "C:\\Users\\t8413244\\Desktop\\SMOP\\"
 MIDI_file_name = "MIDI//yonatanHakatan.mid"
 
 #!/usr/bin/env python3
-file_name = 'c4toc5_1.wav'
+file_name = 'Weightless.wav'
 
 file_path = SMOP_PATH+file_name
 
@@ -95,7 +95,6 @@ sliced = AudioUtil.slicer(note_in_intervals[NOTE][-1][1] * 1000,
                         note_in_intervals[NOTE][-1][2] * 1000, file_name)
 
 midi_intervals = recordToMIDI.MIDI_to_tuple(MIDI_file_name)
-print(midi_intervals)
 list_of_files_to_concat = []
 for inter in midi_intervals:
     NOTE = inter[0]
@@ -103,7 +102,6 @@ for inter in midi_intervals:
         NOTE = NOTE.replace(NOTE[-1], str(int(NOTE[-1]) + 1))
         if(NOTE not in note_in_intervals.keys()):
             NOTE = NOTE.replace(NOTE[-1], str(int(NOTE[-1])-2))
-            print(NOTE)
     sliced = AudioUtil.slicer(note_in_intervals[NOTE][-1][1] * 1000,
                               note_in_intervals[NOTE][-1][2] * 1000, file_name)
     if (inter[2] - inter[1]) <= 0:
@@ -118,7 +116,6 @@ list_of_files_to_concat.sort(key= lambda tup:tup[0][1]) # sorting by time
 new_list = []
 for tup in list_of_files_to_concat:
     new_list.append(tup[1])
-print(new_list)
 concatted = AudioUtil.concat(*new_list)
 pygame.init()
 pygame.mixer.music.load(concatted)
