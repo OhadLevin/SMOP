@@ -1,22 +1,26 @@
 import wave
 from scipy.io import wavfile
-from numpy import array
-import warnings
 import math
 
-import pyaudio
-import sounddevice
 
 
-FILE = "Berklee44v4/piano_D4.wav"
+FILE = "Berklee44v4\\piano_D4.wav"
+FILE_OUT = "output\\out-{}.wav"
 
 
-def slice(startmili, endmili):
-    inp = wave.open(FILE, 'rb')
-    start = math.
-    data = inp.readframes(inp.getnframes() // 2)
-    print(data)
-    out = wave.open("outTest.wav", 'wb')
+def slicer(startmili, endmili, file_inputdir):
+    file_outdir = FILE_OUT.format(file_inputdir.replace(".wav","").replace(
+        "\\", "_") + "_from_" + str(startmili) + "_to_" + str(endmili))
+    inp = wave.open(file_inputdir, 'rb')
+    fr = inp.getframerate()
+    start = math.floor(startmili * fr / 1000)
+    end = math.ceil(endmili * fr / 1000)
+    dif = end - start
+    inp.rewind()
+    inp.setpos(start)
+    data = inp.readframes(dif)
+    print(file_outdir)
+    out = wave.open(file_outdir, 'wb')
     out.setnchannels(inp.getnchannels())
     out.setframerate(inp.getframerate())
     out.setsampwidth(inp.getsampwidth())
@@ -25,16 +29,10 @@ def slice(startmili, endmili):
     out.close()
 
 
-def foo():
-    a=1
-    p = pyaudio.PyAudio()
-    p
 
 
 
 
 if __name__ == '__main__':
-    warnings.filterwarnings("error")
-    slice()
-    #foo()
+    slicer(1000, 2000, FILE)
 
