@@ -4,6 +4,7 @@
     <extensionMap>
       <mapping pattern="README" type="Native" />
       <mapping pattern="words" type="PLAIN_TEXT" />
+      <mapping ext="mid" type="PLAIN_TEXT" />
     </extensionMap>
   </component>
 </application>
