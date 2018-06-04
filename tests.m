@@ -1,6 +1,6 @@
 
 
-file_name = 'c4toc5_1.m4a';
+file_name = 'c4toc5slow.wav';
 % load a .wav file
 [x, fs] = audioread(file_name);   % load an audio file
 x = x(:, 1);                        % get the first channel
@@ -30,20 +30,4 @@ end
 % convert amplitude spectrum to dB (min = -120 dB)
 S = 20*log10(S + 1e-6);
 
-save(strcat(file_name,'stft.mat'), 'S', 'f', 't')
-plot(S)
-% plot the spectrogram
-figure(1)
-surf(t, f, S)
-shading interp
-axis tight
-box on
-view(0, 90)
-set(gca, 'FontName', 'Times New Roman', 'FontSize', 14)
-xlabel('Time, s')
-ylabel('Frequency, Hz')
-title('Amplitude spectrogram of the signal')
-
-handl = colorbar;
-set(handl, 'FontName', 'Times New Roman', 'FontSize', 14)
-ylabel(handl, 'Magnitude, dB')
+save(strcat(file_name,'stft.mat'), 'S', 'f', 't');
