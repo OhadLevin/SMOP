@@ -59,8 +59,9 @@ def concat(*files):
 def multiply(file_in, mult_factor):
     int_factor = math.floor(mult_factor)
     mod_factor = mult_factor - int_factor
-    int_arr = [file_in] * int_factor
-    file_out = concat(*int_arr)
+    if (int_factor > 0):
+        int_arr = [file_in] * int_factor
+        file_outtmp = concat(*int_arr)
 
     file_outdir = FILE_OUT.format(file_in.replace(".wav",
                                                         "").replace("\\",
@@ -77,8 +78,9 @@ def multiply(file_in, mult_factor):
     inp.close()
     out.close()
 
-    file_out = concat(file_out, file_outdir)
-    return file_out
+    if (int_factor > 0):
+        file_outdir = concat(file_outtmp, file_outdir)
+    return file_outdir
 
 
 def multiply_by_time(file_in, time):
@@ -94,6 +96,6 @@ def multiply_by_time(file_in, time):
 if __name__ == '__main__':
     # #slicer(1000, 2000, FILE)
     f = slicer(1000, 1546, FILE)
-    multiply_by_time(f, 9.36)
+    multiply_by_time(f, 502)
 
 
