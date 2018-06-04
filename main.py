@@ -1,4 +1,6 @@
 import numpy as np
+import pyaudio
+import pygame
 import pickle
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -80,7 +82,6 @@ for inter in lst_of_intervals:
     if(note[0] not in note_in_intervals.keys()):
         note_in_intervals[note[0]] = []
     note_in_intervals[note[0]].append((note[1], inter[1], inter[2]))
-print(note_in_intervals)
 
 for note,inters in note_in_intervals.items():
     inters.sort(key=lambda inter : inter[2]-inter[1])
@@ -104,11 +105,17 @@ for inter in midi_intervals:
     sliced = AudioUtil.slicer(note_in_intervals[NOTE][-1][1] * 1000,
                               note_in_intervals[NOTE][-1][2] * 1000, file_name)
     if (inter[2] - inter[1]) <= 0:
+        print(inter)
         continue
-    sliced = AudioUtil.multiply_by_time(sliced, (inter[2] - inter[1])/1000)
+
+    sliced = AudioUtil.multiply_by_time(sliced, (inter[2] - inter[1])/1000.0)
+    print(inter, sliced)
     list_of_files_to_concat.append(sliced)
 print(list_of_files_to_concat)
 concatted = AudioUtil.concat(*list_of_files_to_concat)
+pygame.init()
+pygame.mixer.music.load(concatted)
+pygame.mixer.music.play()
 
 plt.plot(t[0], temp[:])
 plt.show()

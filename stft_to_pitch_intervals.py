@@ -7,7 +7,6 @@ def stft_to_pitch_interval(max_pitch_to_time_map):
     delta_time = list(max_pitch_to_time_map.keys())[1] - \
                  list(max_pitch_to_time_map.keys())[0]
     for time, pitch in max_pitch_to_time_map.items():
-        print(pitch)
         if equal_to_error(pitch, current_interval[0]):
             current_interval[2] = time
         else:

@@ -13,16 +13,26 @@ def MIDI_to_tuple(mfile):
             bpm = tempo_to_bpm(msg.tempo)
     time = 0
     result = []
+    temp = []
+    temp_result = []
     for msg in inp.tracks[1]:
         if (msg.type == "note_on"):
+            time += msg.time
             tmp = (MIDI_to_note(msg.note), ticks_to_miliseconds(time, tpb,
                                                                 bpm),
                    ticks_to_miliseconds(time + msg.time, tpb, bpm))
-            time += msg.time
+            temp = temp + [(msg.note, time)]
             result.append(tmp)
         elif (msg.type == "note_off"):
             time += msg.time
-    return result
+            for t in temp:
+                if t[0] == msg.note:
+                    temp.remove(t)
+                    temp_result.append((MIDI_to_note(msg.note),
+                                        ticks_to_miliseconds(t[1], tpb,
+                                                                bpm), ticks_to_miliseconds(time, tpb, bpm)))
+                    break
+    return temp_result
 
 
 def ticks_to_miliseconds(ticks, TPB, BPM):
@@ -35,4 +45,5 @@ def tempo_to_bpm(tempo):
 
 
 if __name__=="__main__":
-    MIDI_to_tuple(FILE)
+    midi=MIDI_to_tuple(FILE)
+    print(midi)
