@@ -1,9 +1,10 @@
 import mido
 from MIDI_to_note import MIDI_to_note
 
-mfile = "MIDI//yonatanHakatan.mid"
+FILE = "MIDI//yonatanHakatan.mid"
 
-def MIDI_to_tuple():
+
+def MIDI_to_tuple(mfile):
     inp = mido.MidiFile(mfile)
     tpb = inp.ticks_per_beat
     bpm = 0
@@ -36,4 +37,4 @@ def tempo_to_bpm(tempo):
 
 
 if __name__=="__main__":
-    MIDI_to_tuple()
+    MIDI_to_tuple(FILE)

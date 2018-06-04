@@ -30,7 +30,7 @@ SMOP_PATH = "C:\\Users\\t8554024\\Desktop\\אמיר - " \
 file_path = SMOP_PATH+'c4toc5slow.3gp'
 python3_command = "C:\\Users\\t8413244\\Desktop\\SMOP\\smopSkeleton.py " \
                   ""+file_path  #
-python3_command = "C:\\Users\\t8554024\\Desktop\\אמיר\\ - תלפיות\\אקדמיה\\אינטרו\\SMOP\\smopSkeleton.py"
+python3_command = SMOP_PATH + "\\smopSkeleton.py"
 # launch your python2 script using bash
 
 process = subprocess.Popen(python3_command.split(), stdout=subprocess.PIPE,
