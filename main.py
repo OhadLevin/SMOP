@@ -8,6 +8,7 @@ from scipy.io import loadmat
 import subprocess
 
 import AudioUtil
+import recordToMIDI
 from pitch_to_note import pitch_to_note
 from stft_to_pitch_intervals import stft_to_pitch_interval
 
@@ -15,23 +16,27 @@ SMOP_PATH = "C:\\Users\\t8413244\\Desktop\\SMOP\\"
 #SMOP_PATH = "C:\\Users\\t8554024\\Desktop\\אמיר - " \
 #            "תלפיות\\אקדמיה\\אינטרו\\SMOP\\"
 
+MIDI_file_name = "MIDI//yonatanHakatan.mid"
 
 #!/usr/bin/env python3
-file_name = 'Berklee44v4\\piano_D4.wav'
+file_name = 'c4toc5slow.wav'
 
 file_path = SMOP_PATH+file_name
+
 python3_command = "C:\\Users\\t8413244\\Desktop\\SMOP\\smopSkeleton.py " \
-                  ""+file_path  #
-python3_command = SMOP_PATH + "\\smopSkeleton.py"
+                  ""+file_path
+
+python3_command = SMOP_PATH + "smopSkeleton.py"
 # launch your python2 script using bash
 
 process = subprocess.Popen(python3_command.split(), stdout=subprocess.PIPE,
                            shell= True)
+
 output, error = process.communicate()  # receive output from the python2 script
+print(output, error)
 
 
-
-x = loadmat(file_path+'stft.mat')
+x = loadmat(file_name+'stft.mat')
 s = x['S']
 f = x['f']
 t = x['t']
@@ -58,8 +63,6 @@ for i in range(len(temp_amp)):
     if temp_amp[i] < 0.0 * max_amp:
         time_pitch_map[temp[i][1]] = 0
         temp[i] = (0, temp[i][1])
-print(time_pitch_map)
-
 fig = plt.figure()
 # ax = fig.gca(projection='3d')
 # X, Y = np.meshgrid(t,f)
@@ -69,9 +72,6 @@ fig = plt.figure()
 # surf = ax.plot_surface(X, Y, Z, facecolors= my_col)
 # plt.show()
 lst_of_intervals = stft_to_pitch_interval(time_pitch_map)
-for inter in lst_of_intervals:
-    print(str(pitch_to_note(inter[0])) + " from: " + str(inter[1]) + " to: " +
-          str(inter[2]))
 
 note_in_intervals = {}
 for inter in lst_of_intervals:
@@ -85,11 +85,27 @@ for note,inters in note_in_intervals.items():
     inters.sort(key=lambda inter : inter[2]-inter[1])
 
 print(note_in_intervals)
-NOTE = "D5"
+NOTE = "D4"
 
-print(note_in_intervals[NOTE][-1][1],note_in_intervals[NOTE][-1][2], file_path)
+sliced = AudioUtil.slicer(note_in_intervals[NOTE][-1][1] * 1000,
+                        note_in_intervals[NOTE][-1][2] * 1000, file_name)
 
-AudioUtil.slicer(note_in_intervals[NOTE][-1][1] * 1000,note_in_intervals[
-    NOTE][-1][2] * 1000, file_name)
+midi_intervals = recordToMIDI.MIDI_to_tuple(MIDI_file_name)
+print(midi_intervals)
+list_of_files_to_concat = []
+for inter in midi_intervals:
+    NOTE = inter[0]
+    print(NOTE)
+    if (NOTE not in note_in_intervals.keys()):
+        NOTE = NOTE.replace(NOTE[-1], str(int(NOTE[-1]) + 1))
+        if(NOTE not in note_in_intervals.keys()):
+            NOTE = NOTE.replace(NOTE[-1], str(int(NOTE[-1])-2))
+            print(NOTE)
+    sliced = AudioUtil.slicer(note_in_intervals[NOTE][-1][1] * 1000,
+                              note_in_intervals[NOTE][-1][2] * 1000, file_name)
+    list_of_files_to_concat.append(sliced)
+
+concatted = AudioUtil.concat(*list_of_files_to_concat)
+
 plt.plot(t[0], temp[:])
 plt.show()
