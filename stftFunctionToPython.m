@@ -1,6 +1,4 @@
-function [S, f, t] = stftFunctionToPython( file_name )
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+function [S] = stftFunctionToPython( file_name )
 
 % load a .wav file
 [x, fs] = audioread(file_name);   % load an audio file
@@ -8,13 +6,12 @@ x = x(:, 1);                        % get the first channel
 
 % define analysis parameters
 xlen = length(x);                   % length of the signal
-wlen = 1024;                        % window length (recomended to be power of 2)
-hop = wlen/4;                       % hop size (recomended to be power of 2)
-nfft = 4096;                        % number of fft points (recomended to be power of 2)
+wlen = 4096;                        % window length (recomended to be power of 2)
+hop = wlen/2;                       % hop size (recomended to be power of 2)
+nfft = 2^14;                        % number of fft points (recomended to be power of 2)
 
 % perform STFT
 [S, f, t] = stft(x, wlen, hop, nfft, fs);
-
 % define the coherent amplification of the window
 K = sum(hamming(wlen, 'periodic'))/wlen;
 
@@ -32,8 +29,10 @@ end
 % convert amplitude spectrum to dB (min = -120 dB)
 S = 20*log10(S + 1e-6);
 
+save(strcat(file_name,'stft.mat'), 'S', 'f', 't')
+plot(S)
 % plot the spectrogram
-fig = figure(1);
+figure(1)
 surf(t, f, S)
 shading interp
 axis tight
