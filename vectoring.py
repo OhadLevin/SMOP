@@ -3,6 +3,8 @@ from scipy.io import loadmat
 import numpy as np
 import math
 from termcolor import colored
+import pyaudio
+
 
 NOTE_MARGIN = 1/2
 THRESHOLD = 0.1
@@ -63,6 +65,8 @@ def pseudoNotes_to_vector(pseudo_notes, amplitudes):
                         vector[note] /= count_notes[note]
                 else:
                         vector[note] = 0
+        return vector
+def normal_and_threshold_vector(vector):
         result = vector / np.linalg.norm(vector)
         for i in range(len(result)):
                 if result[i] < THRESHOLD:
@@ -93,13 +97,41 @@ def normal_note_segment(segment):
         # normal the segment by a window function
         pass
 
+def play_vector(vector):
+        p = pyaudio.PyAudio()
+        fs = 44100  # sampling rate, Hz, must be integer
+        duration = 0.1  # in seconds, may be float
+        samples = np.zeros(int(fs * duration))
+        for i in range(len(vector)):
+                volume = vector[i]
+                f = note_freq(notes_freqs[i])
+
+                # generate samples, note conversion to float32 array
+                samples += (np.sin(2 * np.pi * np.arange(fs * duration) * f / fs))
+
+        samples = samples.astype(np.float32)
+
+        # for paFloat32 sample values must be in range [-1.0, 1.0]
+        stream = p.open(format=pyaudio.paFloat32,
+                        channels=1,
+                        rate=fs,
+                        output=True)
+
+        # play. May repeat with different volume values (if done interactively)
+        stream.write(volume * samples)
+
+        stream.stop_stream()
+        stream.close()
+
+        p.terminate()
+        pass
 
 if __name__ == '__main__':
         SMOP_PATH = "C:\\Users\\ohadi\\Desktop\\SMOP"
         # SMOP_PATH = "C:\\Users\\t8554024\\Desktop\\אמיר - תלפיות\\אקדמיה\\אינטרו\\SMOP\\"
         MIDI_file_name = "MIDI//yonatanHakatan.mid"
         # !/usr/bin/env python3
-        file_name = 'c4toc5slow.3gp'
+        file_name = 'c4toc5_1.wav'
 
         file_path = SMOP_PATH + file_name
         x = loadmat(file_name + 'stft.mat')
@@ -110,12 +142,14 @@ if __name__ == '__main__':
         for time in range(len(t)):
                 print("time " + str(t[time]) + ": ")
                 temp = pseudoNotes_to_vector(f, s[:, time])
+                play_vector(temp)
+                normalized = normal_and_threshold_vector(temp)
                 for i in range(len(temp)):
-                        if(temp[i] > 0.0):
-                                if temp[i] > 0.6:
-                                        print(colored("\t" + notes_names[i] + ": " + str(temp[i]), 'red'))
+                        if(normalized[i] > 0.0):
+                                if normalized[i] > 0.6:
+                                        print(colored("\t" + notes_names[i] + ": " + str(normalized[i]), 'red'))
                                 else:
-                                        print("\t" + notes_names[i] + ": " + str(temp[i]))
+                                        print("\t" + notes_names[i] + ": " + str(normalized[i]))
                 vectors.append(temp)
 
         pass
