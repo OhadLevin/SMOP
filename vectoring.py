@@ -91,7 +91,7 @@ if __name__ == '__main__':
         # SMOP_PATH = "C:\\Users\\t8554024\\Desktop\\אמיר - תלפיות\\אקדמיה\\אינטרו\\SMOP\\"
         MIDI_file_name = "MIDI//yonatanHakatan.mid"
         # !/usr/bin/env python3
-        file_name = 'Berklee44v4/piano_D4.wav'
+        file_name = 'Game Show Wheel Spin-SoundBible.com-1305738466.wav'
 
         file_path = SMOP_PATH + file_name
         x = loadmat(file_name + 'stft.mat')
@@ -100,7 +100,12 @@ if __name__ == '__main__':
         t = x['t'][0]
         vectors = []
         for time in range(len(t)):
-                vectors.append(pseudoNotes_to_vector(f, s[:, time]))
+                print("time " + str(t[time]) + ": ")
+                temp = pseudoNotes_to_vector(f, s[:, time])
+                for i in range(len(temp)):
+                        if(temp[i] > 0.0):
+                                print("\t" + notes_names[i] + ": " + str(temp[i]))
+                vectors.append(temp)
                 pass
         pass
 

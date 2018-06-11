@@ -1,4 +1,4 @@
-file_name = 'Berklee44v4/piano_D4.wav';
+file_name = 'Game Show Wheel Spin-SoundBible.com-1305738466.wav';
 % load a .wav file
 [x, fs] = audioread(file_name);   % load an audio file
 x = x(:, 1);                        % get the first channel
