@@ -2,6 +2,7 @@ import pitch_to_note
 from scipy.io import loadmat
 import numpy as np
 import math
+from termcolor import colored
 
 NOTE_MARGIN = 1/2
 THRESHOLD = 0.1
@@ -91,7 +92,7 @@ if __name__ == '__main__':
         # SMOP_PATH = "C:\\Users\\t8554024\\Desktop\\אמיר - תלפיות\\אקדמיה\\אינטרו\\SMOP\\"
         MIDI_file_name = "MIDI//yonatanHakatan.mid"
         # !/usr/bin/env python3
-        file_name = 'Game Show Wheel Spin-SoundBible.com-1305738466.wav'
+        file_name = 'c4toc5slow.3gp'
 
         file_path = SMOP_PATH + file_name
         x = loadmat(file_name + 'stft.mat')
@@ -104,8 +105,11 @@ if __name__ == '__main__':
                 temp = pseudoNotes_to_vector(f, s[:, time])
                 for i in range(len(temp)):
                         if(temp[i] > 0.0):
-                                print("\t" + notes_names[i] + ": " + str(temp[i]))
+                                if temp[i] > 0.6:
+                                        print(colored("\t" + notes_names[i] + ": " + str(temp[i]), 'red'))
+                                else:
+                                        print("\t" + notes_names[i] + ": " + str(temp[i]))
                 vectors.append(temp)
-                pass
+
         pass
 
