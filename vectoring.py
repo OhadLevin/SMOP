@@ -1,4 +1,7 @@
 import pitch_to_note
+from scipy.io import loadmat
+import numpy as np
+import math
 
 notes_freqs = list(range(21, 89))
 notes_names = [
@@ -20,4 +23,58 @@ notes_names = [
         "B7",
         "C8", "C#8", "D8", "D#8", "E8", "F8", "F#8", "G8", "G#8", "A8", "A#8",
         "B8"]
+
+
+def find_nearest(array, value):
+    idx = np.searchsorted(array, value, side="left")
+    if idx > 0 and (idx == len(array) or math.fabs(value - array[idx-1]) < math.fabs(value - array[idx])):
+        return array[idx-1]
+    else:
+        return array[idx]
+
+
+def pseudoNotes_to_vector(pseudo_notes, amplitudes):
+        vector = [0] * len(notes_freqs)
+        for i in range(len(vector)):
+                j0 = find_nearest(pseudo_notes, i - 1/3)
+                j1 = find_nearest(pseudo_notes, i + 1/3)
+                vector[i] = surround_to_amplitude(pseudo_notes[j0:j1], amplitudes[j0:j1])
+        return vector
+
+
+def surround_to_amplitude(pseudo_notes, amplitudes):
+        amp = 0
+        for i in range(len(pseudo_notes)):
+                amp += normalized_amplitude(pseudo_notes[i], amplitudes[i])
+        amp /= pseudo_notes[-1] - pseudo_notes[0]
+        return amp
+
+
+def normalized_amplitude(note, amp):
+        #TODO
+        return amp
+
+
+def normal_note_segment(segment):
+        # normal the segment by a window function
+        pass
+
+
+if __name__ == '__main__':
+        SMOP_PATH = "C:\\Users\\ohadi\\Desktop\\SMOP"
+        # SMOP_PATH = "C:\\Users\\t8554024\\Desktop\\אמיר - תלפיות\\אקדמיה\\אינטרו\\SMOP\\"
+        MIDI_file_name = "MIDI//yonatanHakatan.mid"
+        # !/usr/bin/env python3
+        file_name = 'Weightless.wav'
+
+        file_path = SMOP_PATH + file_name
+        x = loadmat(file_name + 'stft.mat')
+        s = x['S']
+        f = x['f']
+        t = x['t']
+        vectors = []
+        for time in t:
+                vectors.append(pseudoNotes_to_vector(f, s[time, :]))
+                pass
+        pass
 
