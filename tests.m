@@ -1,14 +1,17 @@
-file_name = 'Weightless.wav';
+file_name = 'Game Show Wheel Spin-SoundBible.com-1305738466.wav';
 % load a .wav file
 [x, fs] = audioread(file_name);   % load an audio file
 x = x(:, 1);                        % get the first channel
+
+%file_name = 'c456';
+%x = sin(261.63 * 2 *pi * (0 : 1/fs : 3)) + sin(261.63 * 16 *pi * (0 : 1/fs : 3))  + sin(261.63 * 6 *pi * (0 : 1/fs : 3)) ;
 
 % define analysis parameters
 xlen = length(x);                   % length of the signal
 wlen = fs / 5;                        % window length (recomended to be power of 2)
 hop = wlen/2;                       % hop size (recomended to be power of 2)
-nfft = 2^14;                        % number of fft points (recomended to be power of 2)
-window = hamming(wlen, 'periodic');
+nfft = 2^18;                        % number of fft points (recomended to be power of 2)
+window = kaiser(wlen,4);
 
 % perform STFT
 [S, f, t] = stft(x, wlen, hop, nfft, fs, window);
