@@ -5,7 +5,7 @@
 % Author: M.Sc. Eng. Hristo Zhivomirov        12/21/13 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [stft, f, t] = stft(x, wlen, hop, nfft, fs)
+function [stft, f, t] = stft(x, wlen, hop, nfft, fs, win)
 
 % function: [stft, f, t] = stft(x, wlen, hop, nfft, fs)
 % x - signal in the time domain
@@ -22,9 +22,6 @@ x = x(:);
 
 % length of the signal
 xlen = length(x);
-
-% form a periodic hamming window
-win = hamming(wlen, 'periodic');
 
 % stft matrix estimation and preallocation
 rown = ceil((1+nfft)/2);            % calculate the total number of rows
