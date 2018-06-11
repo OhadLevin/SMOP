@@ -77,7 +77,7 @@ def surround_to_amplitude(pseudo_notes, amplitudes):
 
 def normalized_amplitude(pseudo_note, amp, real_note):
         dist = abs(real_note - pseudo_note)
-        normalized_dist = math.e ** (-(NOTE_MARGIN**2)*(dist**2))
+        normalized_dist = math.e ** (-(dist**2)/(NOTE_MARGIN**2))
         normalized_amp = normalized_dist * amp * math.pow(2, (real_note - notes_freqs[0]) / 12)
         return normalized_amp
 
