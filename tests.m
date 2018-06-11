@@ -3,6 +3,9 @@ file_name = 'Weightless.wav';
 [x, fs] = audioread(file_name);   % load an audio file
 x = x(:, 1);                        % get the first channel
 
+file_name = 'c456';
+x = sin(261.63 * 2 *pi * (0 : 1/fs : 3)) + sin(261.63 * 4 *pi * (0 : 1/fs : 3))  + sin(261.63 * 8 *pi * (0 : 1/fs : 3)) ;
+
 % define analysis parameters
 xlen = length(x);                   % length of the signal
 wlen = fs / 5;                        % window length (recomended to be power of 2)

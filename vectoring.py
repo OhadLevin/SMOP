@@ -3,9 +3,9 @@ from scipy.io import loadmat
 import numpy as np
 import math
 
-notes_freqs = list(range(21, 89))
+notes_freqs = list(range(21, 109))
 notes_names = [
-        "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0",
+        "A0", "A#0",
         "B0",
         "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1",
         "B1",
@@ -21,26 +21,39 @@ notes_names = [
         "B6",
         "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7",
         "B7",
-        "C8", "C#8", "D8", "D#8", "E8", "F8", "F#8", "G8", "G#8", "A8", "A#8",
-        "B8"]
+        "C8"]
 
 
 def find_nearest(array, value):
-    idx = np.searchsorted(array, value, side="left")
-    if idx > 0 and (idx == len(array) or math.fabs(value - array[idx-1]) < math.fabs(value - array[idx])):
-        return array[idx-1]
-    else:
-        return array[idx]
+        index = 0
+        while index < len(array) and array[index] < value:
+                index += 1
+        return index
 
 
 def pseudoNotes_to_vector(pseudo_notes, amplitudes):
         vector = [0] * len(notes_freqs)
-        for i in range(len(vector)):
-                j0 = find_nearest(pseudo_notes, i - 1/3)
-                j1 = find_nearest(pseudo_notes, i + 1/3)
-                vector[i] = surround_to_amplitude(pseudo_notes[j0:j1], amplitudes[j0:j1])
+        count_notes = [0] * len(notes_freqs)
+        for i in range(len(pseudo_notes)):
+                note = -1
+                if pseudo_notes[i] == float("-inf"):
+                        note = -1
+                elif pseudo_notes[i] - math.floor(pseudo_notes[i]) <= 1/3:
+                        note = math.floor(pseudo_notes[i])
+                elif pseudo_notes[i] - math.floor(pseudo_notes[i]) >= 2/3:
+                        note = math.floor(pseudo_notes[i]) + 1
+                if note < 0:
+                        continue
+                if note >= 109:
+                        break
+                count_notes[note-notes_freqs[0]] += 1
+                vector[note-notes_freqs[0]] += normalized_amplitude(pseudo_notes[i], amplitudes[i], note)
+        for note in range(len(vector)):
+                if count_notes[note] != 0:
+                        vector[note] /= count_notes[note]
+                else:
+                        vector[note] = 0
         return vector
-
 
 def surround_to_amplitude(pseudo_notes, amplitudes):
         amp = 0
@@ -50,9 +63,10 @@ def surround_to_amplitude(pseudo_notes, amplitudes):
         return amp
 
 
-def normalized_amplitude(note, amp):
-        #TODO
-        return amp
+def normalized_amplitude(pseudo_note, amp, real_note):
+        dist = abs(real_note - pseudo_note)
+        normalized_dist = math.e ** (-9*(dist**2))
+        return normalized_dist * amp
 
 
 def normal_note_segment(segment):
@@ -65,16 +79,16 @@ if __name__ == '__main__':
         # SMOP_PATH = "C:\\Users\\t8554024\\Desktop\\אמיר - תלפיות\\אקדמיה\\אינטרו\\SMOP\\"
         MIDI_file_name = "MIDI//yonatanHakatan.mid"
         # !/usr/bin/env python3
-        file_name = 'Weightless.wav'
+        file_name = 'c456'
 
         file_path = SMOP_PATH + file_name
         x = loadmat(file_name + 'stft.mat')
         s = x['S']
-        f = x['f']
-        t = x['t']
+        f = x['f'][0]
+        t = x['t'][0]
         vectors = []
-        for time in t:
-                vectors.append(pseudoNotes_to_vector(f, s[time, :]))
+        for time in range(len(t)):
+                vectors.append(pseudoNotes_to_vector(f, s[:, time]))
                 pass
         pass
 
