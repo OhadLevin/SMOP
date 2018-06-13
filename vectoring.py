@@ -166,7 +166,10 @@ def note_in_each_moment(rates_to_time):
             else:
                 best_note = j
                 break
-        note_in_moment.append(rates_to_time[0, best_note])
+        if best_note != -1:
+            note_in_moment.append(rates_to_time[0, best_note])
+        else:
+            note_in_moment.append(-1)
     return note_in_moment
 
 
