@@ -33,8 +33,8 @@ def slicer(startmili, endmili, file_inputdir):
     return file_outdir
 
 
-def concat(*files):
-    file_outdir = FILE_OUT.format("HI".replace(".wav","").replace("\\", "_") +
+def concat(*files, end=""):
+    file_outdir = FILE_OUT.format(end+"HI".replace(".wav","").replace("\\", "_") +
                                   "concat" + str(time.time()))
     data = b''
     sw = 2

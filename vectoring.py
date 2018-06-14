@@ -10,6 +10,7 @@ from termcolor import colored
 import pyaudio
 import operator
 import time
+import matplotlib.pyplot as plt
 import random
 import pygame
 
@@ -156,9 +157,9 @@ def note_in_each_moment(rates_to_time):
         max_index, max_value = max(enumerate(rates_to_time[i,:]),
                                        key=operator.itemgetter(1))
 
-        best_note = 1
+        best_note = -1
         for j in range(0, rates_to_time.shape[1]):
-            RATIO = 2
+            RATIO = 1.2
             for k in range(0, rates_to_time.shape[1]):
                 if (j == k):
                     continue
@@ -218,7 +219,7 @@ if __name__ == '__main__':
     MIDI_file_name = "MIDI//yonatanHakatan.mid"
     # !/usr/bin/env python3
     directory = ''
-    file_name = "c4toc5_1.m4a"
+    file_name = "c4toc5_1.wav"
     fs = 44100  # sampling rate, Hz, must be integer
 
     file_path = SMOP_PATH + file_name
@@ -275,10 +276,15 @@ if __name__ == '__main__':
             exit()
         intervals_in_recording = notes_intervals_dict[midi_note]
         passing_intervals = intervals_passing_length(intervals_in_recording, midi_interval[2] - midi_interval[1])
-        chosen_interval_in_recording = random.choice(passing_intervals)
+
+        if len(passing_intervals) != 0:
+            chosen_interval_in_recording = random.choice(passing_intervals)
+        else:
+            chosen_interval_in_recording = random.choice(intervals_in_recording)
         sliced = AudioUtil.slicer(chosen_interval_in_recording[1] * 1000,
                                   chosen_interval_in_recording[2] * 1000, file_name)
 
+        sliced = AudioUtil.multiply_by_time(sliced, (midi_interval[2] - midi_interval[1]) / 1000.0)
         temp_tup = (midi_interval, sliced)
         list_of_files_to_concat.append(temp_tup)
         pass
@@ -286,12 +292,13 @@ if __name__ == '__main__':
     new_list = []
     for tup in list_of_files_to_concat:
         new_list.append(tup[1])
-    concatted = AudioUtil.concat(*new_list)
+    concatted = AudioUtil.concat(*new_list,end=file_name)
     pygame.init()
     pygame.mixer.music.load(concatted)
     pygame.mixer.music.play()
 
-
+    plt.plot(t[0], t[0])
+    plt.show()
     samples = np.int16(samples * 32767)
     write('test' + file_name + '.wav', fs, samples)
     pass
