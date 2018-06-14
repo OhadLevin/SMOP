@@ -1,3 +1,6 @@
+from mido.backends import pygame
+
+import AudioUtil
 import pitch_to_note
 from scipy.io import loadmat
 from scipy.io.wavfile import write
@@ -7,6 +10,10 @@ from termcolor import colored
 import pyaudio
 import operator
 import time
+import random
+import pygame
+
+import recordToMIDI
 
 NOTE_MARGIN = 1 / 2
 THRESHOLD = 0.1
@@ -29,7 +36,7 @@ notes_names = [
     "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7",
     "B7",
     "C8"]
-
+DELTA_TIME = 0.1
 notes_freq_dict = {21: 27.5, 22: 29.135, 23: 30.868, 24: 32.703}
 
 
@@ -172,6 +179,36 @@ def note_in_each_moment(rates_to_time):
             note_in_moment.append(-1)
     return note_in_moment
 
+def for_moment_to_intervals(note_in_moment):
+    intervals = []
+    lst = []
+    last_note = note_in_moment[0]
+    current_interval = [last_note, 0, 0]
+    for t in range(len(note_in_moment)):
+        if note_in_moment[t] == last_note:
+            current_interval[2] = DELTA_TIME * (t+1)
+        else:
+            intervals.append(current_interval)
+            last_note = note_in_moment[t]
+            current_interval = [last_note, DELTA_TIME * t, DELTA_TIME * t]
+    intervals.append(current_interval)
+    return intervals
+
+def intervals_list_to_dictionary(intervals_lst):
+    intervals_dict = {}
+    for inter in intervals_lst:
+        if inter[0] not in intervals_dict.keys():
+            intervals_dict[inter[0]] = [inter]
+        else:
+            intervals_dict[inter[0]].append(inter)
+    return intervals_dict
+
+def intervals_passing_length(intervals, length):
+    passing = []
+    for interval in intervals:
+        if interval[2] - interval[1] > length:
+            passing.append(interval)
+    return passing
 
 if __name__ == '__main__':
 
@@ -226,6 +263,34 @@ if __name__ == '__main__':
         rates_to_time = np.concatenate((rates_to_time, arr))
         vectors.append(temp)
     note_in_time = note_in_each_moment(rates_to_time)
+    notes_intervals = for_moment_to_intervals(note_in_time)
+    notes_intervals_dict = intervals_list_to_dictionary(notes_intervals)
+    midi_intervals = recordToMIDI.MIDI_to_tuple(MIDI_file_name)
+
+    list_of_files_to_concat = []
+    for midi_interval in midi_intervals:
+        midi_note = notes_freqs[notes_names.index(midi_interval[0])]
+        if midi_note not in notes_intervals_dict.keys():
+            print(colored("there is no " + midi_interval[0] + " note in the recording",'red'))
+            exit()
+        intervals_in_recording = notes_intervals_dict[midi_note]
+        passing_intervals = intervals_passing_length(intervals_in_recording, midi_interval[2] - midi_interval[1])
+        chosen_interval_in_recording = random.choice(passing_intervals)
+        sliced = AudioUtil.slicer(chosen_interval_in_recording[1] * 1000,
+                                  chosen_interval_in_recording[2] * 1000, file_name)
+
+        temp_tup = (midi_interval, sliced)
+        list_of_files_to_concat.append(temp_tup)
+        pass
+    list_of_files_to_concat.sort(key=lambda tup: tup[0][1])  # sorting by time
+    new_list = []
+    for tup in list_of_files_to_concat:
+        new_list.append(tup[1])
+    concatted = AudioUtil.concat(*new_list)
+    pygame.init()
+    pygame.mixer.music.load(concatted)
+    pygame.mixer.music.play()
+
 
     samples = np.int16(samples * 32767)
     write('test' + file_name + '.wav', fs, samples)

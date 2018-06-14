@@ -1,4 +1,4 @@
-file_name = 'copper_thingy.m4a';
+file_name = 'c4toc5_1.m4a';
 % load a .wav file
 [x, fs] = audioread(file_name);   % load an audio file
 x = x(:, 1);                        % get the first channel
